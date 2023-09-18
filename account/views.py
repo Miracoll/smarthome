@@ -9,9 +9,8 @@ from rest_framework import status
 # Create your views here.
 
 def home(request):
-    if request.method == 'POST':
-        pass
-    context = {}
+    led = LED.objects.get(keyword='led1')
+    context = {'led':led}
     return render(request, 'account/index.html', context)
 
 class LedDetail(APIView):
