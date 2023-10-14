@@ -213,24 +213,43 @@ def config(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['visitor','admin'])
 def addUser(request):
+    user = request.user
     if request.method == 'POST':
         last = request.POST.get('last_name')
         first = request.POST.get('first_name')
         email = request.POST.get('email')
         username = request.POST.get('username')
         password = request.POST.get('password')
+        confirm = request.POST.get('pass')
+        if user.check_password(confirm):
+            person = User.objects.create_user(username,email,password)
+            person.is_active = True
+            person.last_name = last
+            person.first_name = first
+            person.email = email
+            role = 'visitor'
+            person.save()
 
-        person = User.objects.create(last_name=last,first_name=first,email=email,password=password,username=username)
-        person.is_active = True
-        person.save()
+            if not Group.objects.filter(name=role).exists():
+                Group.objects.create(name=role)
+                getgroup = Group.objects.get(name=role)
+                getgroup.user_set.add(person.id)
 
-        if not Group.objects.filter(name='visitor').exists():
-            Group.objects.create(name='visitor')
-            getgroup = Group.objects.get(name='visitor')
-            getgroup.user_set.add(person.id)
-
-        messages.success(request, 'Created')
-        return redirect('add-user')
+            messages.success(request, 'Created')
+            return redirect('add-user')
+        else:
+            threatCounter = int(user.threat_counter)
+            if threatCounter >= 2:
+                user.is_active = False
+                user.reason = 'Max. password attempt when adding user'
+                user.save()
+            else:
+                print(user.threat_counter)
+                threatCounter += 1
+                user.threat_counter = threatCounter
+                user.save()
+            messages.error(request, 'Unauthorized access')
+            return redirect('config')
     context = {}
     return render(request, 'account/add_user.html', context)
 
