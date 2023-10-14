@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="shortcut icon" href="{% static 'images/favicon/favicon.ico' %}" type="image/x-icon">
+    
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'toastr/toastr.min.css' %}">
+</head>
+<body>
+<div class="row d-flex justify-content-center">
+    <div class="col-lg-6 col-md-12">
+        
+
+        <div class="card my-5 shadow">
+            <div class="card-header">
+                <h4 class="text-muted text-center">HOME AUTOMATION CONTROL</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-center">
+                        <div class="row">
+                            <div class="col-12">
+                                <img src="{% static 'image/home.png' %}" alt="" class="rounded-circle">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="form-group my-2">
+                        <label for="">username</label>
+                        <input type="text" name="username" id="" placeholder="Enter username" class="form-control">
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="d-flex justify-content-between">
+                            <label for="">password</label>
+                            <a href="" class="text-danger text-right">Forget password?</a>
+                        </div>
+                        <input type="password" name="password" id="" placeholder="Password" class="form-control">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-secondary w-100 my-2">grant access</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'toastr/toastr.min.js' %}"></script>
+<script>
+    $(function(){
+        toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-bottom-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "10000",
+        "extendedTimeOut": "6000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    {% if messages %}
+    {% for message in messages %}
+        toastr.{{ message.tags }}("{{ message }}")
+    {% endfor %}
+    {% endif %}
+
+    });
+</script>
+</body>
+</html>

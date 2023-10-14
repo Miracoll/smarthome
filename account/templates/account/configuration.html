@@ -1,0 +1,62 @@
+{% extends 'account/main.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="pagetitle">
+    <h1>Configuration</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item">configuration</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+<section class="section">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+
+            <div>
+                <h5 class="card-title text-center pb-0 fs-4">MANAGE CONFIGURATION</h5>
+            </div>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                {{form|crispy}}
+                <!-- <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="text" name="pass" id="" class="form-control" placeholder="Password for confirmation">
+                </div> -->
+
+                <button type="button" class="btn btn-secondary my-2 w-100" data-bs-toggle="modal" data-bs-target="#config">UPDATE</button>
+                <div class="modal" id="config">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                    
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Confirmation</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="" method="post" enctype="multipart/form-data">
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                        {% csrf_token %}
+                                        <div class="form-group my-2">
+                                            <label for="">Administrative password</label>
+                                            <input type="password" name="pass" class="form-control" required placeholder="Password for confirmation">
+                                        </div>
+                                </div>
+                        
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-danger">Grant access and update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+        </div>
+      </div>
+</section>
+{% endblock content %}
