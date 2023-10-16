@@ -6,6 +6,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Favicons -->
+    <link href="{% static 'image/home.ico' %}" rel="icon">
+
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
 
     <link rel="shortcut icon" href="{% static 'images/favicon/favicon.ico' %}" type="image/x-icon">
@@ -41,7 +44,7 @@
                     <div class="form-group my-2">
                         <div class="d-flex justify-content-between">
                             <label for="">password</label>
-                            <a href="" class="text-danger text-right">Forget password?</a>
+                            <a href="{% url 'password_reset' %}" class="text-danger text-right">Forget password?</a>
                         </div>
                         <input type="password" name="password" id="" placeholder="Password" class="form-control">
                     </div>

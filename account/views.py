@@ -12,6 +12,7 @@ from .functions import sendMessage, extract_lat_lng, addHistory
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from time import sleep
 
 # Create your views here.
 
@@ -90,7 +91,17 @@ def control(request):
     return render(request, 'account/control.html', context)
 
 def onLED(request, ref):
+    counter = 0
     op = Control.objects.get(ref=ref)
+    config = Config.objects.get(id=1)
+    while not op.acknowledge_response:
+        if counter >= 60:
+            config.connection_status = False
+            config.save()
+            messages.error(request, 'No connection')
+            return redirect('control')
+        sleep(0.2)
+        counter += 1
     if op.status:
         messages.info(request, f'{op.name} is already on')
         return redirect('control')
@@ -102,7 +113,17 @@ def onLED(request, ref):
     return redirect('control')
     
 def offLED(request, ref):
+    counter = 0
     op = Control.objects.get(ref=ref)
+    config = Config.objects.get(id=1)
+    while not op.acknowledge_response:
+        if counter >= 60:
+            config.connection_status = False
+            config.save()
+            messages.error(request, 'No connection')
+            return redirect('control')
+        sleep(0.2)
+        counter += 1
     if not op.status:
         messages.info(request, f'{op.name} is already off')
         return redirect('control')
@@ -111,6 +132,24 @@ def offLED(request, ref):
     sendMessage(f'{request.user} just turned off {op.name}')
     addHistory(request, f'Turned off {op.name}')
     messages.success(request, 'OFF')
+    return redirect('control')
+
+def refreshControl(request):
+    counter = 0
+    config = Config.objects.get(id=1)
+    config.acknowledge_request = False
+    while not config.acknowledge_response:
+        if counter >= 60:
+            config.connection_status = False
+            config.acknowledge_request = True
+            config.save()
+            messages.error(request, 'No connection')
+            return redirect('control')
+        sleep(0.2)
+        counter += 1
+    config.connection_status = True
+    config.save()
+    messages.success(request, 'Connected')
     return redirect('control')
 
 def levelZero(request, ref):
@@ -269,12 +308,41 @@ class LedDetail(APIView):
             return Response({'error':'not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = LEDSerializer(led)
         return Response(serializer.data)
-    
-class ConfigDetail(APIView):
+
+class ControlList(APIView):
     def get(self, request):
         try:
-            config = Config.objects.get(id=1)
+            control = Control.objects.all()
+        except Control.DoesNotExist:
+            return Response({'error':'not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = LEDSerializer(control, many=True)
+        return Response(serializer.data)
+    
+class ConfigDetail(APIView):
+    def get(self, request, ref):
+        try:
+            config = Config.objects.get(id=ref)
         except Config.DoesNotExist:
             return Response({'error':'not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ConfigSerializer(config)
+        return Response(serializer.data)
+    
+    def put(self, request, ref):
+        config = Config.objects.get(id=ref)
+        serializer = ConfigSerializer(config, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class ConfigResponse(APIView):
+    def put(self, request, ref):
+        # try:
+        config = Config.objects.get(id=ref)
+        config.connection_status = True
+        config.save()
+        # except Config.DoesNotExist:
+        #     return Response({'error':'not found'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ConfigSerializer(config)
         return Response(serializer.data)

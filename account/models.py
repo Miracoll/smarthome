@@ -19,6 +19,8 @@ class Control(models.Model):
     keyword = models.CharField(max_length=100)
     level = models.IntegerField(default=0)
     status = models.BooleanField(default=False)
+    acknowledge_response = models.BooleanField(default=False)
+    connection_status = models.BooleanField(default=False)
     image = models.ImageField(upload_to='control', default='control.png', blank=True, null=True)
     user = models.ForeignKey(User, models.CASCADE)
     ref = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -29,6 +31,8 @@ class Control(models.Model):
     
 class Config(models.Model):
     whatsapp_number = models.CharField(max_length=20)
+    acknowledge_request = models.BooleanField(default=True)
+    acknowledge_response = models.BooleanField(default=False)
     connection_status = models.BooleanField(default=False)
 
 class History(models.Model):
