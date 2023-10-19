@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'django_crontab',
 
     'account.apps.AccountConfig',
     'rest_framework',
@@ -134,3 +135,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'account.User'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRONJOBS = [
+    ('* * * * *', 'account.cron.autoUpdate')
+]

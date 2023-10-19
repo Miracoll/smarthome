@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from time import sleep
+import paho.mqtt.client as mqtt 
+from random import randrange, uniform
 
 # Create your views here.
 
@@ -91,17 +93,26 @@ def control(request):
     return render(request, 'account/control.html', context)
 
 def onLED(request, ref):
-    counter = 0
+    # op = Control.objects.get(ref=ref)
+    # config = Config.objects.get(id=1)
+    # mqttBroker ="mqtt.eclipseprojects.io"
+    # client = mqtt.Client(f'{op.ref}')
+    # client.connect(mqttBroker) 
+    # status = 'ON'
+    # client.publish(f'{op.name}', status)
+    # print(f"Just published  {status}  to topic {op.name}")
+    # sleep(1)
+    # if op.status:
+    #     messages.info(request, f'{op.name} is already on')
+    #     return redirect('control')
+    # op.status = True
+    # op.save()
+    
     op = Control.objects.get(ref=ref)
     config = Config.objects.get(id=1)
-    while not op.acknowledge_response:
-        if counter >= 60:
-            config.connection_status = False
-            config.save()
-            messages.error(request, 'No connection')
-            return redirect('control')
-        sleep(0.2)
-        counter += 1
+    if not op.connection_status:
+        messages.error(request, 'No connection')
+        return redirect('control')
     if op.status:
         messages.info(request, f'{op.name} is already on')
         return redirect('control')
@@ -113,17 +124,27 @@ def onLED(request, ref):
     return redirect('control')
     
 def offLED(request, ref):
-    counter = 0
+
+    # op = Control.objects.get(ref=ref)
+    # config = Config.objects.get(id=1)
+    # mqttBroker ="mqtt.eclipseprojects.io"
+    # client = mqtt.Client(f'{op.ref}')
+    # client.connect(mqttBroker) 
+    # status = 'OFF'
+    # client.publish(f'{op.name}', status)
+    # print(f"Just published  {status}  to topic {op.name}")
+    # sleep(1)
+    # if not op.status:
+    #     messages.info(request, f'{op.name} is already off')
+    #     return redirect('control')
+    # op.status = False
+    # op.save()
+    
     op = Control.objects.get(ref=ref)
     config = Config.objects.get(id=1)
-    while not op.acknowledge_response:
-        if counter >= 60:
-            config.connection_status = False
-            config.save()
-            messages.error(request, 'No connection')
-            return redirect('control')
-        sleep(0.2)
-        counter += 1
+    if not op.connection_status:
+        messages.error(request, 'No connection')
+        return redirect('control')
     if not op.status:
         messages.info(request, f'{op.name} is already off')
         return redirect('control')
@@ -139,13 +160,12 @@ def refreshControl(request):
     config = Config.objects.get(id=1)
     config.acknowledge_request = False
     while not config.acknowledge_response:
-        if counter >= 60:
+        if counter >= 50:
             config.connection_status = False
-            config.acknowledge_request = True
             config.save()
             messages.error(request, 'No connection')
             return redirect('control')
-        sleep(0.2)
+        sleep(0.5)
         counter += 1
     config.connection_status = True
     config.save()
