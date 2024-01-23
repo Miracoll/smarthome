@@ -137,5 +137,6 @@ AUTH_USER_MODEL = 'account.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CRONJOBS = [
-    ('* * * * *', 'account.cron.autoUpdate')
+    ('*/1 * * * *', 'account.cron.autoUpdate'),
+    # ('* * * * 5', 'account.cron.autoUpdate'),
 ]

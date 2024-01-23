@@ -30,10 +30,10 @@ class Control(models.Model):
         return self.name
     
 class Config(models.Model):
-    whatsapp_number = models.CharField(max_length=20)
-    acknowledge_request = models.BooleanField(default=True)
-    acknowledge_response = models.BooleanField(default=False)
-    connection_status = models.BooleanField(default=False)
+    whatsapp_number = models.CharField(max_length=20, blank=True, null=True)
+    acknowledge_request = models.BooleanField(default=True, blank=True, null=True)
+    acknowledge_response = models.BooleanField(default=False, blank=True, null=True)
+    connection_status = models.BooleanField(default=False, blank=True, null=True)
 
 class History(models.Model):
     action = models.CharField(max_length=100)
